@@ -204,6 +204,8 @@ public class DownloadsUtil {
                         return;
                     }  else if (info.status == DownloadManager.STATUS_SUCCESSFUL) {
                         dialog.dismiss();
+                        // Hack to reset stat information.
+                        new File(info.localFilename).setExecutable(false);
                         if (b.mCallback != null) {
                             b.mCallback.onDownloadFinished(context, info);
                         }
@@ -399,6 +401,8 @@ public class DownloadsUtil {
         if (callback == null)
             return;
 
+        // Hack to reset stat information.
+        new File(info.localFilename).setExecutable(false);
         callback.onDownloadFinished(context, info);
     }
 
