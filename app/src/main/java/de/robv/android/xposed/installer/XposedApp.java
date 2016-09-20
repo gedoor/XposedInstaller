@@ -43,6 +43,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.robv.android.xposed.installer.util.AssetUtil;
+import de.robv.android.xposed.installer.util.DownloadsUtil;
 import de.robv.android.xposed.installer.util.ModuleUtil;
 import de.robv.android.xposed.installer.util.NotificationUtil;
 import de.robv.android.xposed.installer.util.RepoLoader;
@@ -88,6 +89,10 @@ public class XposedApp extends Application implements ActivityLifecycleCallbacks
         if (!dir.exists()) dir.mkdir();
 
         return dir;
+    }
+
+    public static void postOnUiThread(Runnable action) {
+        mMainHandler.post(action);
     }
 
     public static Integer getXposedVersion() {
