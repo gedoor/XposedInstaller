@@ -102,9 +102,9 @@
     <string name="xposed_module_list_updated">Xposed module list was updated\nChanges will become active on reboot</string>
     <string name="xposed_module_updated_notification_title">Xposed module updated</string>
     <string name="xposed_module_updated_notification">Reboot to activate changes</string>
-    <string name="warning_xposed_min_version">This module requires a newer XposedBridge version (%d) and thus cannot be activated.</string>
-    <string name="no_min_version_specified">This module does not specify the XposedBridge version it needs.</string>
-    <string name="warning_min_version_too_low">This module was created for XposedBridge version %1$d, but due to incompatible changes in version %2$d, it has been disabled.</string>
+    <string name="warning_xposed_min_version">This module requires a newer Xposed version (%d) and thus cannot be activated.</string>
+    <string name="no_min_version_specified">This module does not specify the Xposed version it needs.</string>
+    <string name="warning_min_version_too_low">This module was created for Xposed version %1$d, but due to incompatible changes in version %2$d, it has been disabled.</string>
     <string name="module_launch">Launch UI</string>
     <string name="module_download_updates">Download/Updates</string>
     <string name="module_support">Support</string>
@@ -159,8 +159,6 @@
     <string name="settings_group_experimental">Experimental</string>
     <string name="settings_disable_resources">Disabled resource hooks</string>
     <string name="settings_disable_resources_summary">Workaround for conflicts with theming engines\n<b>WARNING:</b> Modules which try to change resources will not work when this is enabled.</string>
-    <string name="settings_performance_experiment" tools:ignore="UnusedResources">Performance experiment</string>
-    <string name="settings_performance_experiment_summary" tools:ignore="UnusedResources">If you enable this, your system performance might either increase, decrease or stay the same. Feel free to try it and report back which effect you see (or if there is none at all). You need to reinstall the Framework and reboot after changing this.</string>
     <string name="settings_group_app">Application</string>
     <string name="settings_theme">Theme</string>
     <string name="settings_theme_light">Light</string>
@@ -210,7 +208,7 @@
     <!-- DownloadUtils -->
     <string name="download_md5sum_incorrect">MD5 sum is incorrect (downloaded: %1$s, expected: %2$s)</string>
     <string name="download_could_not_read_file">Could not read downloaded file: %s</string>
-    <string name="download_no_valid_apk">Downloaded file is not a valid APK (or is incompatible)</string>
+    <string name="download_no_valid_apk">Downloaded file is not a valid APK (or incompatible)</string>
     <string name="download_incorrect_package_name">Package name is incorrect (downloaded: %1$s, expected: %2$s)</string>
     <string name="download_running">Download is running</string>
     <string name="download_progress">%1$,d / %2$,d kB</string>
@@ -355,5 +353,13 @@
     <string name="installation_started">Installation started</string>
     <string name="installation_finished">Installation ended</string>
     <string name="not_now">Not now</string>
+    <string name="countdown">%1$s (%2$d)</string>
+    <string name="flash_error_timeout">Timeout occurred</string>
+    <string name="flash_error_shell_died">Execution aborted unexpectedly</string>
+    <string name="flash_error_invalid_zip">Not a flashable ZIP file</string>
+    <string name="flash_error_not_flashable_in_app">This file can only be flashed via recovery</string>
+    <string name="flash_error_default">Error %d occurred</string>
+    <string name="show_outdated">Show outdated</string>
+    <string name="framework_device_info">Your device</string>
 
 </resources>
