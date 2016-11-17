@@ -216,7 +216,13 @@ public class StatusInstallerFragment extends Fragment {
         View txtInstallContainer = v.findViewById(R.id.status_container);
         ImageView txtInstallIcon = (ImageView) v.findViewById(R.id.status_icon);
 
-        String installedXposedVersion = XposedApp.getXposedProp().get("version");
+        String installedXposedVersion;
+        try {
+            installedXposedVersion= XposedApp.getXposedProp().getVersion();
+        } catch (NullPointerException e) {
+            installedXposedVersion = null;
+        }
+
         View disableView = v.findViewById(R.id.disableView);
         final SwitchCompat xposedDisable = (SwitchCompat) v.findViewById(R.id.disableSwitch);
 
