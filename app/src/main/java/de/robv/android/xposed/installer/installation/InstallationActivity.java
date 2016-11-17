@@ -32,6 +32,8 @@ import de.robv.android.xposed.installer.XposedApp;
 import de.robv.android.xposed.installer.XposedBaseActivity;
 import de.robv.android.xposed.installer.util.RootUtil;
 
+import static de.robv.android.xposed.installer.XposedApp.darkenColor;
+
 public class InstallationActivity extends XposedBaseActivity {
     private static final int REBOOT_COUNTDOWN = 15000;
 
@@ -78,16 +80,71 @@ public class InstallationActivity extends XposedBaseActivity {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (Build.VERSION.SDK_INT >= 21)
+            getWindow().setStatusBarColor(darkenColor(XposedApp.getColor(this), 0.85f));
+    }
+
     public static class InstallationFragment extends Fragment implements FlashCallback {
-        private Flashable mFlashable;
         private static final int TYPE_NONE = 0;
         private static final int TYPE_ERROR = -1;
         private static final int TYPE_OK = 1;
+        private Flashable mFlashable;
         private TextView mLogText;
         private ProgressBar mProgress;
         private ImageView mConsoleResult;
         private Button mBtnReboot;
         private Button mBtnCancel;
+
+        private static ValueAnimator createExpandCollapseAnimator(final View view, final boolean expand) {
+            ValueAnimator animator = new ValueAnimator() {
+                @Override
+                public void start() {
+                    view.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    int height = view.getMeasuredHeight();
+
+                    int start = 0, end = 0;
+                    if (expand) {
+                        start = -height;
+                    } else {
+                        end = -height;
+                    }
+
+                    setIntValues(start, end);
+
+                    super.start();
+                }
+            };
+
+            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                final ViewGroup.MarginLayoutParams layoutParams = ((ViewGroup.MarginLayoutParams) view.getLayoutParams());
+
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    layoutParams.bottomMargin = (Integer) animation.getAnimatedValue();
+                    view.requestLayout();
+                }
+            });
+
+            animator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    view.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    if (!expand) {
+                        view.setVisibility(View.GONE);
+                    }
+                }
+            });
+
+            return animator;
+        }
 
         public void startInstallation(final Context context, final Flashable flashable) {
             mFlashable = flashable;
@@ -152,53 +209,6 @@ public class InstallationActivity extends XposedBaseActivity {
                     appendText(line, TYPE_ERROR);
                 }
             });
-        }
-
-        private static ValueAnimator createExpandCollapseAnimator(final View view, final boolean expand) {
-            ValueAnimator animator = new ValueAnimator() {
-                @Override
-                public void start() {
-                    view.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    int height = view.getMeasuredHeight();
-
-                    int start = 0, end = 0;
-                    if (expand) {
-                        start = -height;
-                    } else {
-                        end = -height;
-                    }
-
-                    setIntValues(start, end);
-
-                    super.start();
-                }
-            };
-
-            animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                final ViewGroup.MarginLayoutParams layoutParams = ((ViewGroup.MarginLayoutParams) view.getLayoutParams());
-
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    layoutParams.bottomMargin = (Integer) animation.getAnimatedValue();
-                    view.requestLayout();
-                }
-            });
-
-            animator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    view.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    if (!expand) {
-                        view.setVisibility(View.GONE);
-                    }
-                }
-            });
-
-            return animator;
         }
 
         @Override

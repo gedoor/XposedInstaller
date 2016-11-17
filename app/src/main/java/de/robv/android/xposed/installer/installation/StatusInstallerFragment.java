@@ -45,6 +45,7 @@ import static de.robv.android.xposed.installer.XposedApp.WRITE_EXTERNAL_PERMISSI
 public class StatusInstallerFragment extends Fragment {
 
     public static final File DISABLE_FILE = new File(XposedApp.BASE_DIR + "conf/disabled");
+    public static String ARCH = getArch();
     private static Activity sActivity;
     private static Fragment sFragment;
     private static String mUpdateLink;
@@ -139,7 +140,7 @@ public class StatusInstallerFragment extends Fragment {
         }
     }
 
-    public static String getArch() {
+    private static String getCompleteArch() {
         String info = "";
 
         try {
@@ -163,17 +164,26 @@ public class StatusInstallerFragment extends Fragment {
             String arch = System.getenv("os.arch");
             if (arch != null) info += arch;
         }
-        info += " (";
-        if (info.contains("x86_64")) {
-            info += "x86_64";
-        } else if (info.contains("x86")) {
-            info += "x86";
-        } else if (info.contains("arm64")) {
-            info += "arm64";
+        return info + " (" + getArch() + ")";
+    }
+
+    @SuppressWarnings("deprecation")
+    private static String getArch() {
+        if (Build.CPU_ABI.equals("arm64-v8a")) {
+            return "arm64";
+        } else if (Build.CPU_ABI.equals("x86_64")) {
+            return "x86_64";
+        } else if (Build.CPU_ABI.equals("mips64")) {
+            return "mips64";
+        } else if (Build.CPU_ABI.startsWith("x86") || Build.CPU_ABI2.startsWith("x86")) {
+            return "x86";
+        } else if (Build.CPU_ABI.startsWith("mips")) {
+            return "mips";
+        } else if (Build.CPU_ABI.startsWith("armeabi-v5") || Build.CPU_ABI.startsWith("armeabi-v6")) {
+            return "armv5";
         } else {
-            info += "arm";
+            return "arm";
         }
-        return info + ")";
     }
 
     @Override
@@ -301,7 +311,7 @@ public class StatusInstallerFragment extends Fragment {
 
         androidSdk.setText(getString(R.string.android_sdk, getAndroidVersion(), Build.VERSION.RELEASE, Build.VERSION.SDK_INT));
         manufacturer.setText(getUIFramework());
-        cpu.setText(getArch());
+        cpu.setText(getCompleteArch());
 
         refreshKnownIssue();
         setHint();

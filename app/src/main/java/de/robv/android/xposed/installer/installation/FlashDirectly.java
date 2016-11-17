@@ -20,11 +20,28 @@ import static de.robv.android.xposed.installer.util.InstallZipUtil.triggerError;
 import static de.robv.android.xposed.installer.util.RootUtil.getShellPath;
 
 public class FlashDirectly extends Flashable {
+    public static final Parcelable.Creator<FlashDirectly> CREATOR
+            = new Parcelable.Creator<FlashDirectly>() {
+        @Override
+        public FlashDirectly createFromParcel(Parcel in) {
+            return new FlashDirectly(in);
+        }
+
+        @Override
+        public FlashDirectly[] newArray(int size) {
+            return new FlashDirectly[size];
+        }
+    };
     private final boolean mSystemless;
 
-    public FlashDirectly(File zipPath, boolean systemless) {
-        super(zipPath);
+    public FlashDirectly(String zipPath, boolean systemless) {
+        super(new File(zipPath));
         mSystemless = systemless;
+    }
+
+    protected FlashDirectly(Parcel in) {
+        super(in);
+        mSystemless = in.readInt() == 1;
     }
 
     public void flash(Context context, FlashCallback callback) {
@@ -84,27 +101,9 @@ public class FlashDirectly extends Flashable {
         callback.onDone();
     }
 
-    public static final Parcelable.Creator<FlashDirectly> CREATOR
-            = new Parcelable.Creator<FlashDirectly>() {
-        @Override
-        public FlashDirectly createFromParcel(Parcel in) {
-            return new FlashDirectly(in);
-        }
-
-        @Override
-        public FlashDirectly[] newArray(int size) {
-            return new FlashDirectly[size];
-        }
-    };
-
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeInt(mSystemless ? 1 : 0);
-    }
-
-    protected FlashDirectly(Parcel in) {
-        super(in);
-        mSystemless = in.readInt() == 1;
     }
 }

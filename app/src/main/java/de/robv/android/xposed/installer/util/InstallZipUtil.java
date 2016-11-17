@@ -1,7 +1,5 @@
 package de.robv.android.xposed.installer.util;
 
-import android.os.Build;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,18 +11,7 @@ import de.robv.android.xposed.installer.XposedApp;
 import de.robv.android.xposed.installer.installation.FlashCallback;
 
 public final class InstallZipUtil {
-    public static class ZipCheckResult {
-        private boolean mValidZip = false;
-        private boolean mFlashableInApp = false;
-
-        public boolean isValidZip() {
-            return mValidZip;
-        }
-
-        public boolean isFlashableInApp() {
-            return mFlashableInApp;
-        }
-    }
+    private InstallZipUtil() {}
 
     public static ZipCheckResult checkZip(String zipPath) {
         ZipFile zip;
@@ -55,39 +42,6 @@ public final class InstallZipUtil {
         }
 
         return result;
-    }
-
-    public static class XposedProp {
-        private String mVersion = null;
-        private int mVersionInt = 0;
-        private String mArch = null;
-        private int mMinSdk = 0;
-        private int mMaxSdk = 0;
-
-        private boolean isComplete() {
-            return mVersion != null
-                    && mVersionInt > 0
-                    && mArch != null
-                    && mMinSdk > 0
-                    && mMaxSdk > 0;
-        }
-
-        public String getVersion() {
-            return mVersion;
-        }
-
-        public boolean isArchCompatible() {
-            // FIXME
-            return mArch.equals("x86");
-        }
-
-        public boolean isSdkCompatible() {
-            return mMinSdk <= Build.VERSION.SDK_INT && Build.VERSION.SDK_INT <= mMaxSdk;
-        }
-
-        public boolean isCompatible() {
-            return isSdkCompatible() && isArchCompatible();
-        }
     }
 
     public static XposedProp parseXposedProp(InputStream is) throws IOException {
@@ -159,5 +113,37 @@ public final class InstallZipUtil {
         } catch (IOException ignored) {}
     }
 
-    private InstallZipUtil() {}
+    public static class ZipCheckResult {
+        private boolean mValidZip = false;
+        private boolean mFlashableInApp = false;
+
+        public boolean isValidZip() {
+            return mValidZip;
+        }
+
+        public boolean isFlashableInApp() {
+            return mFlashableInApp;
+        }
+    }
+
+    public static class XposedProp {
+        private String mVersion = null;
+        private int mVersionInt = 0;
+        private String mArch = null;
+        private int mMinSdk = 0;
+        private int mMaxSdk = 0;
+
+        private boolean isComplete() {
+            return mVersion != null
+                    && mVersionInt > 0
+                    && mArch != null
+                    && mMinSdk > 0
+                    && mMaxSdk > 0;
+        }
+
+        public String getVersion() {
+            return mVersion;
+        }
+
+    }
 }

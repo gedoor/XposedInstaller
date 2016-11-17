@@ -42,6 +42,7 @@ import de.robv.android.xposed.installer.util.RootUtil;
 import de.robv.android.xposed.installer.util.XposedZip;
 
 import static de.robv.android.xposed.installer.XposedApp.WRITE_EXTERNAL_PERMISSION;
+import static de.robv.android.xposed.installer.XposedApp.runOnUiThread;
 
 public abstract class BaseAdvancedInstaller extends Fragment implements DownloadsUtil.DownloadFinishedCallback {
 
@@ -101,10 +102,10 @@ public abstract class BaseAdvancedInstaller extends Fragment implements Download
         chooserUninstallers.setAdapter(new XposedZip.MyAdapter<>(getContext(), uninstallers()));
 
         if (Build.VERSION.SDK_INT >= 21 && installers().size() >= 3 && uninstallers().size() >= 4) {
-            if (StatusInstallerFragment.getArch().contains("86")) {
+            if (StatusInstallerFragment.ARCH.contains("86")) {
                 chooserInstallers.setSelection(2);
                 chooserUninstallers.setSelection(3);
-            } else if (StatusInstallerFragment.getArch().contains("64")) {
+            } else if (StatusInstallerFragment.ARCH.contains("64")) {
                 chooserInstallers.setSelection(1);
                 chooserUninstallers.setSelection(1);
             }
@@ -153,8 +154,14 @@ public abstract class BaseAdvancedInstaller extends Fragment implements Download
 
                                 checkAndDelete(selectedInstaller.name);
 
-                                DownloadsUtil.add(getContext(), selectedInstaller.name, selectedInstaller.link, BaseAdvancedInstaller.this,
-                                        DownloadsUtil.MIME_TYPES.ZIP, true);
+                                new DownloadsUtil.Builder(getContext())
+                                        .setTitle(selectedInstaller.name)
+                                        .setUrl(selectedInstaller.link)
+                                        .setSave(true)
+                                        .setCallback(BaseAdvancedInstaller.this)
+                                        .setMimeType(DownloadsUtil.MIME_TYPES.ZIP)
+                                        .setDialog(true)
+                                        .download();
                             }
                         });
             }
@@ -177,8 +184,14 @@ public abstract class BaseAdvancedInstaller extends Fragment implements Download
 
                                 checkAndDelete(selectedUninstaller.name);
 
-                                DownloadsUtil.add(getContext(), selectedUninstaller.name, selectedUninstaller.link, BaseAdvancedInstaller.this,
-                                        DownloadsUtil.MIME_TYPES.ZIP, true);
+                                new DownloadsUtil.Builder(getContext())
+                                        .setTitle(selectedUninstaller.name)
+                                        .setUrl(selectedUninstaller.link)
+                                        .setSave(true)
+                                        .setCallback(BaseAdvancedInstaller.this)
+                                        .setMimeType(DownloadsUtil.MIME_TYPES.ZIP)
+                                        .setDialog(true)
+                                        .download();
                             }
                         });
             }
@@ -239,13 +252,49 @@ public abstract class BaseAdvancedInstaller extends Fragment implements Download
     @Override
     public void onDownloadFinished(final Context context, final DownloadsUtil.DownloadInfo info) {
         messages.clear();
-        Toast.makeText(context, getString(R.string.downloadZipOk, info.localFilename), Toast.LENGTH_LONG).show();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(sActivity, getString(R.string.downloadZipOk, info.localFilename), Toast.LENGTH_LONG).show();
+            }
+        });
 
         if (getInstallMode() == INSTALL_MODE_RECOVERY_MANUAL)
             return;
 
         if (getInstallMode() == INSTALL_MODE_NORMAL) {
             if (InstallZipUtil.checkZip(info.localFilename).isFlashableInApp()) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        areYouSure(R.string.install_warning, new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                super.onPositive(dialog);
+
+                                if (!startShell()) return;
+
+                                Intent install = new Intent(getContext(), InstallationActivity.class);
+                                install.putExtra(Flashable.KEY, new FlashDirectly(info.localFilename, false));
+                                startActivity(install);
+                            }
+                        });
+                    }
+                });
+                return;
+            } else {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, R.string.not_flashable_inapp, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        }
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
                 areYouSure(R.string.install_warning, new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
@@ -253,26 +302,10 @@ public abstract class BaseAdvancedInstaller extends Fragment implements Download
 
                         if (!startShell()) return;
 
-                        Intent install = new Intent(getContext(), InstallationActivity.class);
-                        install.putExtra("path", info.localFilename);
-                        startActivity(install);
+                        prepareAutoFlash(messages, new File(info.localFilename));
+                        offerRebootToRecovery(messages, info.title, INSTALL_MODE_RECOVERY_AUTO);
                     }
                 });
-                return;
-            } else {
-                Toast.makeText(context, R.string.not_flashable_inapp, Toast.LENGTH_LONG).show();
-            }
-        }
-
-        areYouSure(R.string.install_warning, new MaterialDialog.ButtonCallback() {
-            @Override
-            public void onPositive(MaterialDialog dialog) {
-                super.onPositive(dialog);
-
-                if (!startShell()) return;
-
-                prepareAutoFlash(messages, new File(info.localFilename));
-                offerRebootToRecovery(messages, info.title, INSTALL_MODE_RECOVERY_AUTO);
             }
         });
     }
