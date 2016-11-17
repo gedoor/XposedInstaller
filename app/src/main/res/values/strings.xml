@@ -349,5 +349,8 @@
     <string name="not_logcat">If someone asked you an Android Logcat, you\'re in the wrong section. This is the Xposed log; if you need a logcat, on XDA you can find what you need</string>
     <string name="force_english">Force English language</string>
     <string name="warning_language">Language change will be applied after application restart.</string>
+    <string name="not_flashable_inapp">This zip file cannot be flashed in app. Installing automatically in recovery</string>
+    <string name="installation_started">Installation started</string>
+    <string name="installation_finished">Installation ended</string>
 
 </resources>
