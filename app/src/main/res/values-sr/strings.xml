@@ -46,7 +46,6 @@
     <!-- File operations -->
     <string name="root_failed">Neuspešan pristup root direktorijumu.\n\nProverite još jednom da li je vaš uređaj root-ovan pravilno i da niste blokirali shell komande.</string>
     <string name="file_extract_failed">Nemoguće otpakivanje %s</string>
-    <string name="file_mounting_writable">Izbor mogućnosti zapisa…</string>
     <string name="file_mount_writable_failed">Nema mogućnosti zapisa %s </string>
     <string name="file_trying_to_continue">Pokušaj nastavka bez obzira …</string>
     <string name="file_backup_already_exists">Rezervna kopija već postoji u %s</string>
