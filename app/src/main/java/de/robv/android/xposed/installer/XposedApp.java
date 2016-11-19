@@ -266,14 +266,14 @@ public class XposedApp extends Application implements ActivityLifecycleCallbacks
             file = XPOSED_PROP_FILE;
         } else if (XPOSED_PROP_FILE_SYSTEMLESS_OFFICIAL.canRead()) {
             file = XPOSED_PROP_FILE_SYSTEMLESS_OFFICIAL;
+        } else if (XPOSED_PROP_FILE_SYSTEMLESS_1.canRead()) {
+            file = XPOSED_PROP_FILE_SYSTEMLESS_1;
         } else if (XPOSED_PROP_FILE_SYSTEMLESS_2.canRead()) {
             file = XPOSED_PROP_FILE_SYSTEMLESS_2;
         } else if (XPOSED_PROP_FILE_SYSTEMLESS_3.canRead()) {
             file = XPOSED_PROP_FILE_SYSTEMLESS_3;
         } else if (XPOSED_PROP_FILE_SYSTEMLESS_4.canRead()) {
             file = XPOSED_PROP_FILE_SYSTEMLESS_4;
-        } else if (XPOSED_PROP_FILE_SYSTEMLESS_1.canRead()) {
-            file = XPOSED_PROP_FILE_SYSTEMLESS_1;
         }
 
         if (file != null) {
