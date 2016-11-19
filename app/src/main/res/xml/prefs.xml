@@ -144,12 +144,5 @@
             android:summary="@string/ignore_updates_summ"
             android:title="@string/ignore_updates"/>
 
-        <!--
-                <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="performance_experiment"
-                    android:summary="@string/settings_performance_experiment_summary"
-                    android:title="@string/settings_performance_experiment" />
-        -->
     </PreferenceCategory>
 </PreferenceScreen>
